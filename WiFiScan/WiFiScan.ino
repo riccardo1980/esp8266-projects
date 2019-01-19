@@ -1,48 +1,51 @@
-/*
- *  This sketch demonstrates how to scan WiFi networks. 
- *  The API is almost the same as with the WiFi Shield library, 
- *  the most obvious difference being the different file you need to include:
- */
+/**
+  WiFi Scanner
+  Name: WIFIScan
+  Purpose: Test station mode WiFi capabilities
+
+  @author Riccardo Zanella
+  @version 0.1 19/01/19
+*/
 #include "ESP8266WiFi.h"
 
-void setup() {
-  Serial.begin(115200);
+const int BAUD_RATE = 115200;
+const int WIFI_SETUP_GRACETIME = 100;
+const int SCAN_PERIOD = 500;
 
-  // Set WiFi to station mode and disconnect from an AP if it was previously connected
+void setup() {
+  // serial port settings
+  Serial.begin(BAUD_RATE);
+
+  // WiFi settings
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
-  delay(100);
+  delay(WIFI_SETUP_GRACETIME);
 
   Serial.println("Setup done");
 }
 
+void network_stats_print(int net){  
+  String serial_buffer(net);
+  serial_buffer += ": (";
+  serial_buffer += WiFi.RSSI(net);
+  serial_buffer += ") ";
+  serial_buffer += WiFi.SSID(net);
+  serial_buffer += (WiFi.encryptionType(net) == ENC_TYPE_NONE)?"":"*";
+  
+  Serial.print("\n");
+  Serial.print(serial_buffer);
+}
+
 void loop() {
-  Serial.println("scan start");
+  Serial.print("\n\nscan start");
+  int total_networks = WiFi.scanNetworks();
+  
+  Serial.print(", found ");
+  Serial.print(total_networks);
+  Serial.print(" networks:");
 
-  // WiFi.scanNetworks will return the number of networks found
-  int n = WiFi.scanNetworks();
-  Serial.print ("scan done: ");
-  if (n == 0)
-    Serial.println("no networks found");
-  else
-  {
-    Serial.print(n);
-    Serial.println(" networks found");
-    for (int i = 0; i < n; ++i)
-    {
-      // Print SSID and RSSI for each network found
-      Serial.print(i + 1);
-      Serial.print(": ");
-      Serial.print(WiFi.SSID(i));
-      Serial.print(" (");
-      Serial.print(WiFi.RSSI(i));
-      Serial.print(")");
-      Serial.println((WiFi.encryptionType(i) == ENC_TYPE_NONE)?" ":"*");
-      delay(10);
-    }
-  }
-  Serial.println("");
-
-  // Wait a bit before scanning again
-  delay(5000);
+  for (int net = 0; net < total_networks; ++net)
+    network_stats_print(net);
+   
+  delay(SCAN_PERIOD);
 }
