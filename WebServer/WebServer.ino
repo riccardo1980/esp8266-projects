@@ -30,6 +30,7 @@ bool wifi_read_cfg (const char *filename){
   File fid = SPIFFS.open(filename, "r");
   if (fid){
     String content = fid.readString();
+    fid.close();
     const size_t capacity = JSON_OBJECT_SIZE(2) + 60;
     DynamicJsonBuffer jsonBuffer(capacity);
     JsonObject& root = jsonBuffer.parseObject(content);

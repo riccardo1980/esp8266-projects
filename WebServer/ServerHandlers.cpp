@@ -1,12 +1,29 @@
 #include <ESP8266WebServer.h>
 #include "ServerHandlers.h"
+#include "FS.h"
 
 extern ESP8266WebServer server;
 
-void handleRoot() {
+String getPage(const char * filename){
   String out = "";
-  out += "<form action=\"/LED\" method=\"POST\"><input type=\"submit\" value=\"Toggle LED\"></form>";
+  SPIFFS.begin();
+  File fid = SPIFFS.open(filename, "r");
+  if (fid){
+    out += fid.readString();
+    fid.close();
+  }
+  else{
+    out += "Can't read ";
+    out += filename; 
+  }
+  return out;
+}
+
+void handleRoot() {
+  String out = getPage("/root_form.html"); 
   server.send(200, "text/html", out);
+  
+  SPIFFS.end();
 }
 
 void handleLED() {                          // If a POST request is made to URI /LED
