@@ -32,10 +32,12 @@ bool wifi_read_cfg (const char *filename){
     String content = fid.readString();
     fid.close();
     const size_t capacity = JSON_OBJECT_SIZE(2) + 60;
-    DynamicJsonBuffer jsonBuffer(capacity);
-    JsonObject& root = jsonBuffer.parseObject(content);
-    ESSID = root["ESSID"];
-    PASSWORD = root["PASSWORD"];
+    DynamicJsonDocument config(capacity);
+    DeserializationError error = deserializeJson(config, content);
+    if (error)
+      return false;
+    ESSID = config["ESSID"];
+    PASSWORD = config["PASSWORD"];
     return true;
   }
   else
@@ -84,7 +86,7 @@ void setup() {
   Serial.print((WIFI_CFG_OK?"ok":"error")); 
   
   Serial.print("\nwifi connect: ");
-  Serial.print((WIFI_CONNECT_OK?String(WiFi.localIP()):"error")); 
+  Serial.print((WIFI_CONNECT_OK?WiFi.localIP().toString():"error"));
 
   Serial.print("\nmDNS responder: ");
   Serial.print((MDNS_OK?"ok":"error")); 
