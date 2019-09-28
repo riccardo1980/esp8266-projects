@@ -1,10 +1,10 @@
 /**
   WebServer and LED
-  Name: WebServer
-  Purpose: Load WiFi config and pages using SPIFFS + LED test 
+  Name: TinyWeather
+  Purpose: Loads data from BMP280 and Shows values via WiFi
 
   @author Riccardo Zanella
-  @version 0.1 22/01/19
+  @version 0.1 28/09/19
 */
 
 #include <ArduinoJson.h>
@@ -13,6 +13,8 @@
 #include <ESP8266WebServer.h>
 #include "FS.h"
 #include "ServerHandlers.h"
+
+#define STATUS_LED D0
 
 const int BAUD_RATE = 115200;
 
@@ -61,6 +63,7 @@ bool mDNS_start(){
 void setup() {
   // serial port settings
   Serial.begin(BAUD_RATE);
+  pinMode(STATUS_LED, OUTPUT);
 
   // initializations
   bool SPIFFS_IS_INIT = SPIFFS.begin();
@@ -87,7 +90,11 @@ void setup() {
   Serial.print("\nmDNS responder: ");
   Serial.print((MDNS_OK?"ok":"error")); 
   
-  Serial.print("\nHTTP server started");
+  if (SPIFFS_IS_INIT && WIFI_CONNECT_OK && MDNS_OK){
+    Serial.print("\nHTTP server started");
+    digitalWrite(STATUS_LED, LOW);
+  }
+
 }
 
 void loop() {

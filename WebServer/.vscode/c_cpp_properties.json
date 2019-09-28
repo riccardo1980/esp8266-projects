@@ -4,7 +4,7 @@
             "name": "Mac",
             "includePath": [
                 "/Users/ricky/Library/Arduino15/packages/esp8266/tools/**",
-                "/Users/ricky/Library/Arduino15/packages/esp8266/hardware/esp8266/2.4.2/**",
+                "/Users/ricky/Library/Arduino15/packages/esp8266/hardware/esp8266/**",
                 "${workspaceFolder}/**",
                 "/Applications/arduino/Arduino.app/Contents/Java/libraries",
                 "/Applications/arduino/Arduino.app/Contents/Java/hardware/tools/avr/avr/include",
